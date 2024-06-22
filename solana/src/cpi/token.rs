@@ -2,7 +2,10 @@
 use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, program::invoke, pubkey::Pubkey,
 };
-use spl_token::instruction::AuthorityType;
+use spl_token::{
+    instruction::AuthorityType,
+    solana_program::pubkey::Pubkey as SplPubkey
+};
 
 use crate::{NautilusAccountInfo, NautilusMut, NautilusSigner};
 
@@ -33,7 +36,7 @@ pub fn approve<'a>(
             source_owner.key(),
             signer_pubkeys.as_slice(),
             amount,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -74,7 +77,7 @@ pub fn approve_checked<'a>(
             signer_pubkeys.as_slice(),
             amount,
             decimals,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -105,7 +108,7 @@ pub fn burn<'a>(
             authority.key(),
             signer_pubkeys.as_slice(),
             amount,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -144,7 +147,7 @@ pub fn burn_checked<'a>(
             signer_pubkeys.as_slice(),
             amount,
             decimals,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -174,7 +177,7 @@ pub fn close_account<'a>(
             destination.key(),
             authority.key(),
             signer_pubkeys.as_slice(),
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -204,7 +207,7 @@ pub fn freeze_account<'a>(
             mint.key(),
             freeze_authority.key(),
             signer_pubkeys.as_slice(),
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -228,7 +231,7 @@ pub fn initialize_account<'a>(
             new_token_account.key(),
             mint.key(),
             authority.key(),
-        )?,
+        ).unwrap(),
         &[
             *new_token_account.account_info(),
             *mint.account_info(),
@@ -256,7 +259,7 @@ pub fn initialize_account2<'a>(
             new_token_account.key(),
             mint.key(),
             authority,
-        )?,
+        ).unwrap(),
         &[
             *new_token_account.account_info(),
             *mint.account_info(),
@@ -278,7 +281,7 @@ pub fn initialize_account3<'a>(
             new_token_account.key(),
             mint.key(),
             authority,
-        )?,
+        ).unwrap(),
         &[*new_token_account.account_info(), *mint.account_info()],
     )
 }
@@ -295,7 +298,7 @@ pub fn initialize_immutable_owner<'a>(
         &spl_token::instruction::initialize_immutable_owner(
             token_program_id,
             new_token_account.key(),
-        )?,
+        ).unwrap(),
         &[*new_token_account.account_info()],
     )
 }
@@ -318,7 +321,7 @@ pub fn initialize_mint<'a>(
             mint_authority,
             freeze_authority,
             decimals,
-        )?,
+        ).unwrap(),
         &[*mint.account_info(), *rent],
     )
 }
@@ -338,7 +341,7 @@ pub fn initialize_mint2<'a>(
             mint_authority,
             freeze_authority,
             decimals,
-        )?,
+        ).unwrap(),
         &[*mint.account_info()],
     )
 }
@@ -365,7 +368,7 @@ pub fn initialize_multisig<'a>(
             multisig_account.key(),
             signer_pubkeys.as_slice(),
             m,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -390,7 +393,7 @@ pub fn initialize_multisig2<'a>(
             multisig_account.key(),
             signer_pubkeys.as_slice(),
             m,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -422,7 +425,7 @@ pub fn mint_to<'a>(
             mint_authority.key(),
             signer_pubkeys.as_slice(),
             amount,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -460,7 +463,7 @@ pub fn mint_to_checked<'a>(
             signer_pubkeys.as_slice(),
             amount,
             decimals,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -483,7 +486,7 @@ pub fn revoke<'a>(
             source_account.key(),
             source_owner.key(),
             signer_pubkeys.as_slice(),
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -513,7 +516,7 @@ pub fn set_authority<'a>(
             authority_type,
             current_authority.key(),
             signer_pubkeys.as_slice(),
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -528,7 +531,7 @@ pub fn sync_native<'a>(
     token_account: impl NautilusMut<'a>,
 ) -> ProgramResult {
     invoke(
-        &spl_token::instruction::sync_native(token_program_id, token_account.key())?,
+        &spl_token::instruction::sync_native(token_program_id, token_account.key()).unwrap(),
         &[*token_account.account_info()],
     )
 }
@@ -552,12 +555,12 @@ pub fn thaw_account<'a>(
     };
     invoke(
         &spl_token::instruction::thaw_account(
-            token_program_id,
-            token_account.key(),
-            mint.key(),
-            freeze_authority.key(),
+            token_program_id as &SplPubkey,
+            token_account.key() as &SplPubkey,
+            mint.key() as &SplPubkey,
+            freeze_authority.key() as &SplPubkey,
             signer_pubkeys.as_slice(),
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -589,7 +592,7 @@ pub fn transfer<'a>(
             authority.key(),
             signer_pubkeys.as_slice(),
             amount,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }
@@ -633,7 +636,7 @@ pub fn transfer_checked<'a>(
             signer_pubkeys.as_slice(),
             amount,
             decimals,
-        )?,
+        ).unwrap(),
         &accounts,
     )
 }

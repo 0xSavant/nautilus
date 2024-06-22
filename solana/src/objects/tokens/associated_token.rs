@@ -1,10 +1,12 @@
 //! The `AssociatedTokenAccount<T>` Nautilus object and all associated trait
 //! implementations.
 use solana_program::{
-    account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
-    program_pack::Pack, pubkey::Pubkey,
+    account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError, pubkey::Pubkey,
 };
-pub use spl_token::state::Account as AssociatedTokenAccountState;
+pub use spl_token::{
+    solana_program::program_pack::Pack,
+    state::Account as AssociatedTokenAccountState
+};
 
 use crate::{
     cpi, error::NautilusError, Create, Mint, Mut, NautilusAccountInfo, NautilusMut, NautilusSigner,
