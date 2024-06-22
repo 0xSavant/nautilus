@@ -39,7 +39,7 @@ impl<'a> Edition<'a> {
             // This is dubious, but it'll build for now
             data: EditionState { 
                 key: Key::EditionV1,
-                parent: Pubkey::new_unique(),
+                parent: Pubkey::new_unique() as Pubkey,
                 edition: 0
             },
         }

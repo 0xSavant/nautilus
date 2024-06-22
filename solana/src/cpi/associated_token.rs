@@ -44,11 +44,11 @@ pub fn recover_nested<'a>(
 ) -> ProgramResult {
     invoke(
         &spl_associated_token_account::instruction::recover_nested(
-            wallet.key() as &solana_program::pubkey::Pubkey,
-            owner_mint.key() as &solana_program::pubkey::Pubkey,
-            nested_mint.key() as &solana_program::pubkey::Pubkey,
-            token_program.key as &solana_program::pubkey::Pubkey,
-        ) as &solana_program::instruction::Instruction,
+            wallet.key(),
+            owner_mint.key(),
+            nested_mint.key(),
+            token_program.key,
+        ),
         &[
             *wallet.account_info(),
             *nested_mint.account_info(),
