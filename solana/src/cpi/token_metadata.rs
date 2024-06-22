@@ -1,5 +1,6 @@
 //! Cross-Program invocations to the Metaplex Token Metadata Program.
 
+use mpl_token_metadata::{instructions::{CreateMasterEditionV3InstructionArgs, CreateMetadataAccountV3InstructionArgs, MintNewEditionFromMasterEditionViaTokenInstructionArgs}, types::{DataV2, MintNewEditionFromMasterEditionViaTokenArgs}};
 use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, program::invoke, pubkey::Pubkey,
 };
@@ -20,25 +21,34 @@ pub fn create_metadata_v3<'a>(
     update_authority: impl NautilusAccountInfo<'a>,
     payer: impl NautilusSigner<'a>,
     rent: Box<AccountInfo<'a>>,
+    system_program: Box<AccountInfo<'a>>
 ) -> ProgramResult {
+    let ctx = mpl_token_metadata::instructions::CreateMetadataAccountV3 {
+        metadata: *metadata.account_info().key,
+        mint: *mint.account_info().key,
+        mint_authority: *mint_authority.account_info().key,
+        payer: *payer.account_info().key,
+        update_authority: (*update_authority.account_info().key, true),
+        rent: Some(*rent.key),
+        system_program: *system_program.key
+    };
+
     invoke(
-        &mpl_token_metadata::instruction::create_metadata_accounts_v3(
-            *token_metadata_program_id,
-            *metadata.key(),
-            *mint.key(),
-            *mint_authority.key(),
-            *payer.key(),
-            *update_authority.key(),
-            title,
-            symbol,
-            uri,
-            None,
-            0,
-            true,
-            false,
-            None,
-            None,
-            None,
+        &mpl_token_metadata::instructions::CreateMetadataAccountV3::instruction(
+            &ctx,
+            CreateMetadataAccountV3InstructionArgs {
+                data: DataV2 {
+                    name: title,
+                    symbol,
+                    uri,
+                    uses: None,
+                    creators: None,
+                    collection: None,
+                    seller_fee_basis_points: 0,
+                },
+                is_mutable: true,
+                collection_details: None,
+            }
         ),
         &[
             *metadata.account_info(),
@@ -63,17 +73,27 @@ pub fn create_master_edition_v3<'a>(
     payer: impl NautilusSigner<'a>,
     rent: Box<AccountInfo<'a>>,
     max_supply: Option<u64>,
+    token_program: Box<AccountInfo<'a>>,
+    system_program: Box<AccountInfo<'a>>
 ) -> ProgramResult {
+    let ctx = mpl_token_metadata::instructions::CreateMasterEditionV3 {
+        edition: *edition.account_info().key,
+        metadata: *metadata.account_info().key,
+        mint: *mint.account_info().key,
+        mint_authority: *mint_authority.account_info().key,
+        payer: *payer.account_info().key,
+        update_authority: *update_authority.account_info().key,
+        token_program: *token_program.key,
+        rent: Some(*rent.key),
+        system_program: *system_program.key
+    };
+
     invoke(
-        &mpl_token_metadata::instruction::create_master_edition_v3(
-            *token_metadata_program_id,
-            *edition.key(),
-            *mint.key(),
-            *update_authority.key(),
-            *mint_authority.key(),
-            *metadata.key(),
-            *payer.key(),
-            max_supply,
+        &mpl_token_metadata::instructions::CreateMasterEditionV3::instruction(
+            &ctx,
+            CreateMasterEditionV3InstructionArgs {
+                max_supply
+            }
         ),
         &[
             *edition.account_info(),
@@ -103,23 +123,36 @@ pub fn mint_edition_from_master_edition<'a>(
     update_authority: impl NautilusSigner<'a>,
     payer: impl NautilusSigner<'a>,
     rent: Box<AccountInfo<'a>>,
+    token_program: Box<AccountInfo<'a>>,
+    system_program: Box<AccountInfo<'a>>,
     edition_val: u64,
 ) -> ProgramResult {
+    let ctx = mpl_token_metadata::instructions::MintNewEditionFromMasterEditionViaToken {
+        new_metadata: *metadata.key(),
+        new_edition: *edition.key(),
+        master_edition: *master_edition.key(),
+        new_mint: *mint.key(),
+        new_mint_authority: *mint_authority.key(),
+        payer: *payer.key(),
+        token_account_owner: *to_authority.key(),
+        token_account: *to.key(),
+        new_metadata_update_authority: *update_authority.key(),
+        metadata: *master_edition_metadata.key(),
+        edition_mark_pda: *master_edition_mint.key(),
+        token_program: *token_program.key,
+        rent: Some(*rent.key),
+        system_program: *system_program.key
+    };
+
+    
     invoke(
-        &mpl_token_metadata::instruction::mint_new_edition_from_master_edition_via_token(
-            *token_metadata_program_id,
-            *metadata.key(),
-            *edition.key(),
-            *master_edition.key(),
-            *mint.key(),
-            *mint_authority.key(),
-            *payer.key(),
-            *to_authority.key(),
-            *to.key(),
-            *update_authority.key(),
-            *master_edition_metadata.key(),
-            *master_edition_mint.key(),
-            edition_val,
+        &mpl_token_metadata::instructions::MintNewEditionFromMasterEditionViaToken::instruction(
+            &ctx,
+            MintNewEditionFromMasterEditionViaTokenInstructionArgs {
+                mint_new_edition_from_master_edition_via_token_args: MintNewEditionFromMasterEditionViaTokenArgs {
+                    edition: edition_val
+                }
+            }
         ),
         &[
             *metadata.account_info(),

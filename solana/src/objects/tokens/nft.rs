@@ -125,6 +125,8 @@ impl<'a> Mut<Nft<'a>> {
         mint_authority: impl NautilusSigner<'a>,
         update_authority: impl NautilusSigner<'a>,
         payer: impl NautilusSigner<'a>,
+        token_program: Box<AccountInfo<'a>>,
+        system_program: Box<AccountInfo<'a>>,
         edition_val: u64,
     ) -> ProgramResult {
         cpi::token_metadata::mint_edition_from_master_edition(
@@ -141,6 +143,8 @@ impl<'a> Mut<Nft<'a>> {
             update_authority,
             payer,
             master_edition.rent.clone(),
+            token_program,
+            system_program,
             edition_val,
         )
     }
@@ -153,6 +157,8 @@ impl<'a> Mut<Nft<'a>> {
         update_authority: impl NautilusSigner<'a>,
         mint_authority: impl NautilusSigner<'a>,
         payer: impl NautilusSigner<'a>,
+        token_program: Box<AccountInfo<'a>>,
+        system_program: Box<AccountInfo<'a>>,
     ) -> ProgramResult {
         let multisigs: Option<Vec<Signer<Wallet>>> = None; // TODO: Multisig support
         cpi::token::mint_to(
@@ -173,6 +179,8 @@ impl<'a> Mut<Nft<'a>> {
             payer,
             master_edition.self_account.rent.clone(),
             Some(1),
+            token_program,
+            system_program
         )
     }
 

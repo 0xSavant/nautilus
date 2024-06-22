@@ -63,7 +63,12 @@ where
             index: borsh::BorshDeserialize::deserialize(buf)?,
         })
     }
+
+    fn deserialize_reader<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {
+        Ok(borsh::BorshDeserialize::deserialize_reader(reader)?)
+    }
 }
+
 impl borsh::ser::BorshSerialize for NautilusIndexData
 where
     std::collections::HashMap<String, u32>: borsh::BorshSerialize,

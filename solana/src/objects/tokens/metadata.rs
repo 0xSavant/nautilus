@@ -1,12 +1,26 @@
 //! The `Metadata<T>` Nautilus object and all associated trait implementations.
-pub use mpl_token_metadata::state::{Metadata as MetadataState, TokenMetadataAccount};
+use borsh::BorshSerialize;
+
+pub use mpl_token_metadata::{
+    types::Key,
+    accounts::Metadata as MetadataState
+};
 use solana_program::{
-    account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
+    account_info::AccountInfo, 
+    entrypoint::ProgramResult, 
+    program_error::ProgramError,
     pubkey::Pubkey,
 };
 
 use crate::{
-    cpi, error::NautilusError, Create, Mint, NautilusAccountInfo, NautilusSigner, Signer, Wallet,
+    cpi, 
+    error::NautilusError, 
+    Create, 
+    Mint, 
+    NautilusAccountInfo, 
+    NautilusSigner, 
+    Signer, 
+    Wallet
 };
 
 /// The Nautilus object representing a token metadata account.
@@ -30,10 +44,29 @@ impl<'a> Metadata<'a> {
         account_info: Box<AccountInfo<'a>>,
         token_metadata_program: Box<AccountInfo<'a>>,
     ) -> Self {
+        let info = account_info.clone();
+        
         Self {
             account_info,
             token_metadata_program,
-            data: MetadataState::default(),
+            data: MetadataState {
+                key: Key::MetadataV1,
+                update_authority: *info.owner,
+                mint: Pubkey::new_unique(),
+                name: "".to_string(),
+                symbol: "".to_string(),
+                uri: "".to_string(),
+                primary_sale_happened: false,
+                is_mutable: true,
+                seller_fee_basis_points: 0,
+                uses: None,
+                token_standard: None,     
+                creators: None,
+                collection: None,
+                collection_details: None,
+                edition_nonce: None,
+                programmable_config: None
+            },
         }
     }
 
@@ -100,7 +133,7 @@ impl<'a> NautilusAccountInfo<'a> for Metadata<'a> {
     }
 
     fn span(&self) -> Result<usize, ProgramError> {
-        Ok(MetadataState::size())
+        Ok((self.data.try_to_vec()?).len())
     }
 }
 
@@ -131,6 +164,7 @@ impl<'a> Create<'a, Metadata<'a>> {
             update_authority,
             payer,
             self.rent.to_owned(),
+            self.system_program.to_owned()
         )?;
         self.self_account = Metadata::load(
             self.self_account.account_info.clone(),
@@ -163,6 +197,7 @@ impl<'a> Create<'a, Metadata<'a>> {
             update_authority,
             payer,
             self.rent.to_owned(),
+            self.system_program.to_owned()
         )?;
         self.self_account = Metadata::load(
             self.self_account.account_info.clone(),

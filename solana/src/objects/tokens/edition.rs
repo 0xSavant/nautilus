@@ -1,8 +1,10 @@
 //! The `Edition<T>` and `MasterEdition<T>` Nautilus object` and all associated
 //! trait implementations.
-pub use mpl_token_metadata::state::{
-    Edition as EditionState, MasterEditionV2 as MasterEditionState, TokenMetadataAccount,
+use borsh::BorshSerialize;
+pub use mpl_token_metadata::accounts::{
+    Edition as EditionState, MasterEdition as MasterEditionState, Metadata,
 };
+use mpl_token_metadata::types::Key;
 use solana_program::{account_info::AccountInfo, program_error::ProgramError, pubkey::Pubkey};
 
 use crate::{error::NautilusError, NautilusAccountInfo};
@@ -34,7 +36,12 @@ impl<'a> Edition<'a> {
             account_info,
             token_metadata_program,
             rent,
-            data: EditionState::default(),
+            // This is dubious, but it'll build for now
+            data: EditionState { 
+                key: Key::EditionV1,
+                parent: Pubkey::new_unique(),
+                edition: 0
+            },
         }
     }
 
@@ -45,7 +52,7 @@ impl<'a> Edition<'a> {
         token_metadata_program: Box<AccountInfo<'a>>,
         rent: Box<AccountInfo<'a>>,
     ) -> Result<Self, ProgramError> {
-        let data = match EditionState::safe_deserialize(match &account_info.try_borrow_data() {
+        let data = match EditionState::from_bytes(match &account_info.try_borrow_data() {
             Ok(acct_data) => acct_data,
             Err(_) => {
                 return Err(NautilusError::LoadDataFailed(
@@ -102,8 +109,9 @@ impl<'a> NautilusAccountInfo<'a> for Edition<'a> {
         self.account_info.owner
     }
 
+    // Get serialized byte length instead of built in method from older mplx versions
     fn span(&self) -> Result<usize, ProgramError> {
-        Ok(EditionState::size())
+        Ok((self.data.try_to_vec()?).len())
     }
 }
 
@@ -134,7 +142,12 @@ impl<'a> MasterEdition<'a> {
             account_info,
             token_metadata_program,
             rent,
-            data: MasterEditionState::default(),
+            // This is dubious, but it'll build for now
+            data: MasterEditionState {
+                key: Key::MasterEditionV2,
+                supply: 0,
+                max_supply: None
+            },
         }
     }
 
@@ -203,7 +216,8 @@ impl<'a> NautilusAccountInfo<'a> for MasterEdition<'a> {
         self.account_info.owner
     }
 
+    // Get serialized byte length instead of built in method from older mplx versions
     fn span(&self) -> Result<usize, ProgramError> {
-        Ok(MasterEditionState::size())
+        Ok((self.data.try_to_vec()?).len())
     }
 }
