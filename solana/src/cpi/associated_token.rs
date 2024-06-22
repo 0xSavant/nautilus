@@ -16,11 +16,11 @@ pub fn create_associated_token_account<'a>(
 ) -> ProgramResult {
     invoke(
         &spl_associated_token_account::instruction::create_associated_token_account(
-            payer.key(),
-            owner.key(),
-            mint.key(),
-            token_program.key,
-        ),
+            payer.key() as &solana_program::pubkey::Pubkey,
+            owner.key() as &solana_program::pubkey::Pubkey,
+            mint.key() as &solana_program::pubkey::Pubkey,
+            token_program.key as &solana_program::pubkey::Pubkey,
+        ) as &solana_program::instruction::Instruction,
         &[
             *mint.account_info(),
             *new_account.account_info(),
@@ -44,11 +44,11 @@ pub fn recover_nested<'a>(
 ) -> ProgramResult {
     invoke(
         &spl_associated_token_account::instruction::recover_nested(
-            wallet.key(),
-            owner_mint.key(),
-            nested_mint.key(),
-            token_program.key,
-        ),
+            wallet.key() as &solana_program::pubkey::Pubkey,
+            owner_mint.key() as &solana_program::pubkey::Pubkey,
+            nested_mint.key() as &solana_program::pubkey::Pubkey,
+            token_program.key as &solana_program::pubkey::Pubkey,
+        ) as &solana_program::instruction::Instruction,
         &[
             *wallet.account_info(),
             *nested_mint.account_info(),

@@ -150,6 +150,7 @@ impl<'a> Mut<Nft<'a>> {
     }
 
     /// Mint a MasterEdition NFT.
+    #[allow(clippy::too_many_arguments)]
     pub fn mint_master_edition(
         &self,
         master_edition: Mut<MasterEdition<'a>>,

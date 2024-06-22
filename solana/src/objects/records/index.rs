@@ -64,8 +64,12 @@ where
         })
     }
 
+    // Need to come back to this, I just want the compiler to love me
     fn deserialize_reader<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {
-        Ok(borsh::BorshDeserialize::deserialize_reader(reader)?)
+        let rdr = borsh::BorshDeserialize::deserialize_reader(reader)?;
+        Ok(Self {
+            index: rdr
+        })
     }
 }
 

@@ -11,7 +11,7 @@ use crate::{Create, Metadata, NautilusAccountInfo, NautilusMut, NautilusSigner};
 #[allow(clippy::boxed_local)]
 #[allow(clippy::too_many_arguments)]
 pub fn create_metadata_v3<'a>(
-    token_metadata_program_id: &Pubkey,
+    _token_metadata_program_id: &Pubkey,
     metadata: Create<'a, Metadata<'a>>,
     title: String,
     symbol: String,
@@ -64,7 +64,7 @@ pub fn create_metadata_v3<'a>(
 #[allow(clippy::boxed_local)]
 #[allow(clippy::too_many_arguments)]
 pub fn create_master_edition_v3<'a>(
-    token_metadata_program_id: &Pubkey,
+    _token_metadata_program_id: &Pubkey,
     edition: impl NautilusMut<'a>,
     mint: impl NautilusAccountInfo<'a>,
     metadata: impl NautilusAccountInfo<'a>,
@@ -110,7 +110,7 @@ pub fn create_master_edition_v3<'a>(
 #[allow(clippy::boxed_local)]
 #[allow(clippy::too_many_arguments)]
 pub fn mint_edition_from_master_edition<'a>(
-    token_metadata_program_id: &Pubkey,
+    _token_metadata_program_id: &Pubkey,
     mint: impl NautilusMut<'a>,
     metadata: impl NautilusAccountInfo<'a>,
     edition: impl NautilusMut<'a>,
